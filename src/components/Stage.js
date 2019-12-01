@@ -6,7 +6,7 @@ import { StyledGrid } from '../styles/StyledGrid'
 
 import Square from './Square'
 
-const Stage = ({ stage, handlePlayerChoice }) => {
+const Stage = ({ stage, handlePlayerChoice, winner }) => {
   
   return (
     <StyledGrid>
@@ -18,9 +18,10 @@ const Stage = ({ stage, handlePlayerChoice }) => {
          return row.map((square, x) =>
             <Square
               key={'' + y + x}
-              mark={square}
+              square={square}
               pos={{ y: y, x: x }}
               handlePlayerChoice={handlePlayerChoice}
+              winner={winner}
             />
           )
         })

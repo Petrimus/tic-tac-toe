@@ -1,8 +1,8 @@
 import styled from 'styled-components'
 
 export const StyledSquare = styled.div`
-  width: 100%;
-  height: 100%;
+  width: auto;
+ 
   background-color: whitesmoke;
   display: flex;
   flex-direction: row;
@@ -11,4 +11,5 @@ export const StyledSquare = styled.div`
   align-items: center;
   padding: 5px;
   font-size: 3em;
+  color: ${props => props.color};
 `

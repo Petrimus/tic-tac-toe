@@ -4,12 +4,15 @@ import { StyledSquare } from '../styles/StyledSquare'
 
 
 const Square = (props) => {
-  const { mark, handlePlayerChoice, pos } = props
-// console.log('mark in square', mark)
+  const { square, handlePlayerChoice, pos, winner } = props
+  // console.log('mark in square', mark)
 
   return (
-    <StyledSquare onClick={handlePlayerChoice(pos)}>
-      {mark}
+    <StyledSquare    
+      onClick={winner ? undefined : handlePlayerChoice(pos)}
+      color={square[1]}    
+      >
+      {square[0]}
     </StyledSquare>
   )
 }
