@@ -11,23 +11,17 @@ const Stage = ({ stage, handlePlayerChoice, winner }) => {
   return (
     <StyledGrid>
       {
-        stage.map((row, y) => {
-          // console.log('row', row) 
-          // console.log('index ', y)
-                   
-         return row.map((square, x) =>
+        stage.map((cell, index) =>         
             <Square
-              key={'' + y + x}
-              square={square}
-              pos={{ y: y, x: x }}
+              key={index}              
+              pos={index}
+              cell={cell}
               handlePlayerChoice={handlePlayerChoice}
               winner={winner}
             />
           )
-        })
-      }
+        }     
     </StyledGrid>
-
   )
 }
 export default Stage

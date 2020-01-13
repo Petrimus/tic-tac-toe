@@ -4,92 +4,67 @@ import { initialize } from '../gameUtility'
 
 export const useStage = () => {
   const [stage, setStage] = useState(initialize())
-  const [winner, setWinner] = useState(false)
-  const [player, setPlayer] = useState('player')
-
+  const [winner, setWinner] = useState(0)
 
   const updateStage = (pos) => {
 
-    const newStage = (() => {
-      let prev = [...stage]
-      prev[pos.y][pos.x] = ['X', 'black']
-      return prev
-    })()
+    let prevStage = [...stage]
 
-    const possibleMoves = availlableMoves(newStage)
-    // console.log(possibleMoves)
+    prevStage[pos] = ['X', 'black']
 
-    if (checkWinner(newStage)) {
-      setWinner(true)
-      setStage(newStage)
-      setPlayer('player')
+    if (availlableMoves(prevStage).length === 0) {
+      setWinner(3)
+    }
+
+    if (checkWinner(prevStage)) {
+      setWinner(1)
+      setStage(prevStage)
       return
-    }    
-    const aiStage = aiSelect(newStage, possibleMoves)
+    }
+
+    const aiStage = aiSelect(prevStage)
+
     if (checkWinner(aiStage)) {
-      setWinner(true)
-      setPlayer('ai')      
-    }   
-      setStage(aiStage)    
+      setWinner(2)
+    }
+
+    setStage(aiStage)
   }
 
-  const checkWinner = (stage) => {
-    // console.log('stage ', stage)
+  const reset = () => () => {
+    setStage(initialize())
+    setWinner(0)
+  }
 
-    for (let y = 0; y < stage.length; y++) {
-      let temp = []
-      for (let x = 0; x < stage[y].length; x++) {
-        const value = [y, x, stage[y][x]]
-        temp.push(value)
-      }
-      if (equals(temp[0][2][0], temp[1][2][0], temp[2][2][0])) {
-        temp[0][2][1] = 'red'
-        temp[1][2][1] = 'red'
-        temp[2][2][1] = 'red'
+  const checkWinner = (prev) => {
+    for (let i = 0; i < combos.length; i++) {
+
+      const [one, two, three] = combos[i]
+
+      if (equals(prev[one][0], prev[two][0], prev[three][0])) {
+        // console.log('equals')
+
+        prev[one][1] = 'red'
+        prev[two][1] = 'red'
+        prev[three][1] = 'red'
+
         return true
       }
     }
-    for (let x = 0; x < stage[0].length; x++) {
-      let temp = []
-      for (let y = 0; y < stage.length; y++) {
-        const value = [y, x, stage[y][x]]
-        temp.push(value)
-      }
-      if (equals(temp[0][2][0], temp[1][2][0], temp[2][2][0])) {
-        temp[0][2][1] = 'red'
-        temp[1][2][1] = 'red'
-        temp[2][2][1] = 'red'
-        return true
-      }
-    }
-    if (equals(stage[0][0][0], stage[1][1][0], stage[2][2][0])) {
-      stage[0][0][1] = 'red'
-      stage[1][1][1] = 'red'
-      stage[2][2][1] = 'red'
-      return true
-    }
-    if (equals(stage[0][2][0], stage[1][1][0], stage[2][0][0])) {
-      stage[0][2][1] = 'red'
-      stage[1][1][1] = 'red'
-      stage[2][0][1] = 'red'
-      return true
-    }
   }
 
-  const availlableMoves = (currentStage) => {
+  const availlableMoves = (stage) => {
     let availlable = []
-    for (let y = 0; y < currentStage.length; y++) {
-      for (let x = 0; x < currentStage[y].length; x++) {
-        if (currentStage[y][x][0] === '') {
-          const arr = [y, x]
-          availlable.push(arr)
-        }
+    for (let i = 0; i < stage.length; i++) {
+      if (stage[i][0] === '') {
+        availlable.push(i)
       }
     }
     return availlable
   }
 
   const equals = (a, b, c) => {
+
     if (a !== '' && b !== '' && c !== '') {
       if (a === b && b === c) {
         return true
@@ -97,21 +72,65 @@ export const useStage = () => {
     }
   }
 
-  const aiSelect = (newStage, possibleMoves) => {    
-    const y = possibleMoves[0][0]
-    // console.log('y ', y)
-    const x = possibleMoves[0][1]
-    // console.log('x ', x)
+  const aiSelect = (prev) => {
 
-    newStage[possibleMoves[0][0]][possibleMoves[0][1]] = ['O', 'black']
-    return newStage  
+    for (let i = 0; i < combos.length; i++) {
+      const [one, two, three] = combos[i]
+
+      if (prev[one][0] === '' || prev[two][0] === '' || prev[three][0] === '') {
+        if ((prev[one][0] === 'O' && prev[two][0] === 'O') ||
+          (prev[one][0] === 'O' && prev[three][0] === 'O') ||
+          (prev[two][0] === 'O' && prev[three][0] === 'O')) {
+          // console.log('pos combos', combos[i])
+
+          for (let ii = 0; ii < combos[i].length; ii++) {
+            const index = combos[i][ii]
+            if (prev[index][0] === '') {
+              prev[index] = ['O', 'black']
+              return prev
+            }
+          }
+        }
+      }
+    }
+
+    for (let i = 0; i < combos.length; i++) {
+      const [one, two, three] = combos[i]
+
+      if (prev[one][0] === '' || prev[two][0] === '' || prev[three][0] === '') {
+        if ((prev[one][0] === 'X' && prev[two][0] === 'X') ||
+          (prev[one][0] === 'X' && prev[three][0] === 'X') ||
+          (prev[two][0] === 'X' && prev[three][0] === 'X')) {
+
+          for (let ii = 0; ii < combos[i].length; ii++) {
+            const index = combos[i][ii]
+            if (prev[index][0] === '') {
+              prev[index] = ['O', 'black']
+              return prev
+            }
+          }
+        }
+      }
+    }
+
+    const possMoves = availlableMoves(prev)
+    const index = Math.floor(Math.random() * possMoves.length)
+
+    prev[possMoves[index]] = ['O', 'black']
+
+    return prev
   }
 
-  const winCombos = () => {
-    let combos = []
+  const combos = [
+    [0, 1, 2],
+    [3, 4, 5],
+    [6, 7, 8],
+    [0, 3, 6],
+    [1, 4, 7],
+    [2, 5, 8],
+    [0, 4, 8],
+    [6, 4, 2]
+  ]
 
-    
-  }
-
-  return [stage, updateStage, winner, player]
+  return [stage, updateStage, winner, reset]
 }

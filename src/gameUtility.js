@@ -1,5 +1,3 @@
 
-export const initialize = () => 
-  Array.from(Array(3), () =>
-  new Array(3).fill(['', 'black'])
-  )
+export const initialize = () => new Array(9).fill(['', 'black'])
+  
